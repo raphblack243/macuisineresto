@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="col-md-6">
+    <div class="row g-0 border rounded-1 overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative ">
+      <div class="col p-4 d-flex flex-column position-static">
+        <h4 class="d-inline-block mb-2 text-success">{{ product.name }}</h4>
+        <h2 class="mb-0 text-warning">$ {{ product.price }}</h2>
+        <p class="mb-auto">{{ product.description }}</p>
+        <img src="{{ product.photos.url }}"  alt="{{ product.name }}" style="max-width:400px;">
+        {% if user.is_authenticated %}
+        <p></p>
+        <form class="add-to-cart-form" data-product-id="{{ product.id }}">
+          {% csrf_token %}
+          <input type="hidden" name="product_id" value="{{ product.id }}">
+          <button type="submit" class="btn btn-outline-success">Ajouter au panier</button>
+        </form>
+          
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+    
+{% endblock content %}
+    

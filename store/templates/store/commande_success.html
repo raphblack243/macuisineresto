@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>Commande Passsée avec succcès</h2>
+        <p>Veuillez entendre votre livraison dans quelques minutes. Merci d'avoir acheté chez nous! &#9745;</p>
+        <p>Veuillez garder ce code <strong class=" bg-success">{{ order.zip_code }}</strong> jusqu'à la livraison</p>
+        <a href="{% url 'index' %}" class="btn btn-primary">Retour à l'Accueil</a>
+    </div>  
+{% endblock content %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="col-md-10 mx-auto col-lg-5" id="signin">
+        <h1>tableau de bord du Livreur</h1>
+        <p><a href="{% url 'index' %}">Retour à l'accueil</a></p>
+        
+        {% if error %}
+            <p class="error-message text-danger">{{ error }}</p>
+        {% endif %}
+        
+        {% for commande in commandes %}
+            <div class="card mb-3">
+                <div class="card-body bg-secondary">
+                    <h5 class="card-title">Commande #{{ commande.id }} de {{ commande.user }}</h5>
+                    <p class="card-text">{{ commande.items }}</p>
+                    <p class="card-text">{{ commande.address }}</p>
+                    <p class="card-text">Date: {{ commande.date_commande }}</p>
+                    <p class="card-text">Total: ${{ commande.total }}</p>
+
+                    <!-- Formulaire pour valider la commande -->
+                    <form action="{% url 'livreur_dashboard' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="commande_id" value="{{ commande.id }}">
+                        <div class="form-group">
+                            <label for="zip_code">Code ZIP:</label>
+                            <input type="text" name="zip_code" class="form-control" placeholder="Entrez le code ZIP">
+                        </div>
+                        <button type="submit" class="btn btn-success mt-2">Valider</button>
+                    </form>
+
+                    <!-- Lien vers Google Maps -->
+                    <a href="https://www.google.com/maps/search/?api=1&query={{ commande.latitude }},{{ commande.longitude }}" target="_blank">
+                        Voir l'itinéraire
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

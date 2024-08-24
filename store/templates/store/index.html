@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <div class="card justify-content-center m-auto">
+            <p class="text-sm-center text-wrap text-secondary">Bonjour {{ user.username }} soyez le bienvenue dans notre super marche nous somme heureux de t'avoir comme notre client!!!</p>
+        </div>
+    {% endif %}
+    <div class="card justify-content-center m-auto bg-light">
+        <div class="card-body"><input type="text" id="search-input" class="form-control text-center" placeholder="Rechercher un produit..."></div>
+        <div class="list-group bg-light text-center " id="search-results"></div>
+    </div>
+    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+        <ol class="carousel-indicators">
+            <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></li>
+            <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></li>
+            <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></li>
+            <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"></li>
+            <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="4"></li>
+            <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="5"></li>
+        </ol>
+        <div class="carousel-inner" id="bodyimg">
+            {% for produit in produit %}
+                <div class="carousel-item {% if forloop.first %} active {% endif %}">
+                        <img src="{{ produit.image.url }}" class="d-block w-100 " alt="{{ produit.nomImg }}" id="image">
+                    <div class="carousel-caption d-none d-md-block ">
+                        <h1 class="text-center font-monospace text-success text-xxl-center bg-light">{{ produit.nomImg }}</h1>
+                        <p class="text-center font-monospace text-light text-xxl-center bg-success">{{ produit.detailImg }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"  data-bs-slide="prev">
+          <span class="carousel-control-prev-icon  bg-dark" aria-hidden="true"></span>
+          <span class="visually-hidden"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"  data-bs-slide="next">
+          <span class="carousel-control-next-icon bg-dark" aria-hidden="true"></span>
+          <span class="visually-hidden"></span>
+        </button>
+    </div>
+    
+    <div class="container py-2">
+        <h1 class="text-center font-monospace text-dark text-xxl-center text-decoration-underline">MENU</h1>
+        {% for category in categories %}
+            <h3 class="text-center font-monospace text-success text-xxl-center">{{ category.name }} &#8659;</h3>
+        <div class="row">
+            {% for product in category.product_set.all %}
+                <div class="col-md-3" >
+                    <div class="card" style="width: 100%;height: 100%; object-fit: cover;" id="produit">
+                        <img src="{{ product.photos.url }}"  alt="{{ products.name }}" class="card-img-top" style="width: 100%;height: 100%; object-fit: cover; " >
+                        <div class="card-body">
+                            <div class="card-title" style="display: flex; justify-content: space-between;">
+                                <h5 class="card-title text-dark">{{ product.name }}</h5>
+                                <h5 class="card-text text-warning">${{ product.price }}</h5>
+                            </div>
+                            {% if user.is_authenticated %}
+                            <div class="card">
+                                <div class="d-flex m-1">                             
+                                    <a href="{% url 'Product' product.slug %}" style="margin-right: 38px;" class="text-decoration-none"><button type="button" class="btn btn-outline-warning d-flex" >Voir</button></a>
+                                    
+                                        <form class="add-to-cart-form " data-product-id="{{ product.id }}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                                            <button type="submit" class="btn btn-outline-success">Acheter</button>
+                                        </form>
+                                </div>
+                            </div>
+                            {% endif %}
+                                <div class="card justify-content-center align-items-center">
+                                    {% if not user.is_authenticated %}
+                                        <a href="{% url 'Product' product.slug %}" class="text-decoration-none"><button type="button" class="btn btn-outline-warning " >Voir le detail</button></a>
+                                    {% endif %}
+                                </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-3 offset-md-4">
+            <ul class="pagination">
+                {% if categories.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ categories.previous_page_number}}">Precedent</a>
+                    </li>
+                {% endif %}
+
+                    <li class="page-item active">
+                        <a class="page-link" href="?page={{ categories.number }}">{{ categories.number}}</a>
+                    </li>
+
+                {% if categories.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ categories.next_page_number }}">Suivant</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    {% if not user.is_authenticated %}
+    <div class="card justify-content-center">
+        <p class="text-sm-center text-wrap text-danger">NOTE : Pour ajouter quelque chose au panier veuiller vous connectez ou vous inscrire!!!</p>
+    </div>
+    {% endif %}
+    <style>
+        #image{
+            max-width: 900px;
+            width: auto;
+            margin: auto;
+            object-fit: cover;
+        }
+        .list-group-item-action{
+            color: #000;
+            text-decoration: none;
+        }
+        .list-group-item-action:hover{
+            color: #000;
+            text-decoration: dashed;
+            text-decoration: underline;
+        }
+    </style>
+    
+{% endblock content %}
+    

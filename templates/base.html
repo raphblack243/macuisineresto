@@ -1,0 +1,218 @@
+{% load static %}
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        
+        <title>MA CUISINE</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+        
+                <!-- Bootstrap CSS v5.2.1 -->
+        <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}" >
+        <link rel="stylesheet" href="{% static 'bootstrap/css/headers.CSS' %}" >
+    </head>
+    <body>
+        <div class="b-example-divider"></div>
+
+        <header>
+            <div class="px-3 py-2 bg-dark text-white fixed-top">
+            <div class="container">
+                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <a href="/" class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none">
+                    <h3 class="text-break text-light bg-secondary">MA CUISINE</h3>
+                </a>
+
+                <ul class="nav col-12 col-lg-auto my-2 my-md-0 text-small">
+                    <li>
+                    <a href="{% url 'index' %}" class="nav-link text-light">
+                        Accueil
+                    </a>
+                    </li>
+                    <li>
+                        {% if user.cart %}
+                            <a href="{% url 'cart' %}" class="nav-link text-light">
+                                Panier({{user.cart.orders.count}})
+                            </a>
+                        {% endif %}
+                    </li>   
+                    <li>
+                        <a href="#produit" class="nav-link text-light">
+                            Produit
+                        </a>
+                    </li>
+                    {% if  user.is_authenticated %}
+                        <li>
+                             <button type="button" class="btn btn-success text-light" data-bs-toggle="popover" data-bs-html="true" title="Information sur compte"
+                                data-bs-content='<p> Nom : {{ user.username }} </p> <p> Postnom : {{ user.last_name }} </p> <p> Email : {{ user.email }} </p>
+                                {% if user.is_authenticated and not user.is_livreur %}
+                                    <a href="{% url 'client_update' %}">Modifier Informations</a><br>
+                                    <a href="{% url 'change_password' %}">Changer le mot de passe</a><br>
+                                {% endif %}
+                                {% if user.is_authenticated %}
+                                    <a class="page-link bg-danger text-dark" href="{% url 'logout' %}">Déconnexion</a>
+                                {% endif %}'> profil
+                            </button>
+                        </li>
+                    {% endif %}
+                    {% if not user.is_authenticated %}
+                        <li>
+                            <a class="nav-link text-light" href="{% url 'client_login' %}">
+                                Se connecter
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link text-light" href="#">ou</a>
+                        </li>
+                        <li>
+                            <a class="nav-link text-light" href="{% url 'deliver_login' %}">Connexion Livreur</a>
+                        </li>
+                    {% endif %}
+                    <li>
+                        <span></span>
+                        <a href="#contact " class="nav-link text-light">
+                            Apropos de nous!
+                        </a>  
+                    </li>
+                </ul>
+                </div>
+            </div>
+            </div>
+        </header>
+
+        <div class="contanier">
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+
+                        </div>
+                        <div class="card-body">
+                            {% block content %}
+            
+                            {% endblock content %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="bg-dark text-light py-5" style="border-radius: 50px;">
+            <div class="container">
+                <div class="row m-5 ">
+                    <div class="col-md-6 m-lg-2 text-center font-monospace ">
+                        <h1>Super marché les Martyrs</h1>
+                    </div>
+                    <div class="col-md-6" id="contact">
+                        <h5>Informations de contact</h5>
+                        <p>Adresse : 123 Rue Principale, Ville de Goma, Republique democratique du congo</p>
+                        <p>Téléphone : +243 992028857</p>
+                        <p>Email : unimrdcrectorat@gmail.com</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>retour</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="{% url 'index' %}">Accueil</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        
+        <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+        <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
+        <script>
+            var myCaroussel=document.getElementById('carousselExampleIndicators');
+            var carousel=new bootstrap.Caroussel(myCaroussel, {interval: 2000,
+                wrap: true
+            })
+        </script>
+        <script>
+            var popoverTriggerList=[].slice.call(document.querySelectorAll( '[data-bs-toggle="popover"]'));
+            var popoverList=popoverTriggerList.map(function(popoverTriggerEl){
+                return new bootstrap.Popover(popoverTriggerEl)
+            });
+        </script>
+        <script>
+            function updateQuantity(element) {
+                var quantity = element.value;
+                var orderId = element.getAttribute('data-order-id');
+                $.ajax({
+                    type: 'POST' ,
+                    url:'{% url "update_quantity" %}',
+                    data:{
+                        'order_id': orderId,
+                        'quantity': quantity,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            console.log('quantité modifiée avec succes ');
+                            location.reload();
+                        } else {
+                            console.error('echec de modification de la quantite: ', response.message);
+                        }
+                    },
+                    error: function(){
+                        console.log(' Erreur lors de la modification de la quantite: ', response);
+                    }
+                })
+            }
+        </script>                                                                                   
+        <script>
+            $(document).ready(function() {
+                $('.add-to-cart-form').on('submit', function(event) {
+                    event.preventDefault();
+                    var form = $(this);
+                    $.ajax({
+                        url: "{% url 'add_to_cart' %}",
+                        method: 'POST',
+                        data: form.serialize(),
+                        success: function(response) {
+                            console.log('ajouter avec succes ');
+                            location.reload();
+                            alert(response.message);
+                        },
+                        error: function(response) {
+                            alert(response.responseJSON.error);
+                        }
+                    });
+                });
+            });
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search-input');
+            const searchResults = document.getElementById('search-results');
+            searchInput.addEventListener('input', function() {
+            const query = searchInput.value;
+            if (query.length > 0) {
+            fetch(`/search/?search-input=${query}`)
+            .then(response => response.json())
+            .then(data => {
+            searchResults.innerHTML = ''; // Clear previous results
+            data.results.forEach(product => {
+            const div = document.createElement('div');
+            const link = document.createElement('a');
+            link.href=`/Product/${product.slug}`;//Assuming URL pattern
+            link.textContent = product.name;
+            div.appendChild(link);
+            link.className='list-group-item list-group-item-action';
+            searchResults.appendChild(div);
+            });
+            })
+            .catch(error => console.error('Error:', error));
+            } else {
+            searchResults.innerHTML = ''; // Clear results if query is empty
+            }
+            });
+            });
+        </script>
+    </body>
+</html>
